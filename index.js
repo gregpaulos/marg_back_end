@@ -12,8 +12,7 @@ app.get(`/v1/hello`, (req, res) => {
 });
 
 app.get(`/v1/establishments/:lat/:long`, (req, res) => {
-  queries
-    .getEstablishments(req.params.lat, req.params.long)
+  queries.getEstablishments(req.params.lat, req.params.long)
     .then()
     .catch();
 });
