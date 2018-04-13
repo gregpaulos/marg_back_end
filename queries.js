@@ -34,5 +34,9 @@ module.exports = {
 
     getEstablishmentsQuickly() {
         return database(`establishments`).where(`id`, `<`, 6)
+    },
+
+    getEstablishmentsByID(id) {
+        return database(`establishments`).where(`id`, id)
     }
 };

@@ -18,6 +18,12 @@ app.get(`/v1/establishments/`, (req, res) => {
     .catch(err => { res.json({error: err}) });
 });
 
+app.get(`/v1/establishments/:id`, (req, res) => {
+  queries.getEstablishmentsByID(req.params.id)
+    .then(records => { res.json(records) })
+    .catch(err => { res.json({error: err}) });
+});
+
 app.get(`/v1/establishments/random`, (req, res) => {
   queries.getEstablishments()
     .then(records => { res.json(records) })
