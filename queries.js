@@ -7,24 +7,23 @@ module.exports = {
 
     getNumberOfEstablishments() {
         return database(`establishments`).max(`id`).first()
-            .then(id => { numberOfEstablishments = id.max; console.log(numberOfEstablishments) })
+            .then(id => { numberOfEstablishments = id.max })
     },
 
     async getEstablishments() {
         await this.getNumberOfEstablishments();
-        let ids = [0, 0, 0, 0, 0];
         let match = false;
-        ids = ids.map((id, index) => {
-            while(id === 0 || match === true) {
-                id = Math.ceil(Math.random() * numberOfEstablishments);
-                match = false;
-                for(let i = 0; i < index; i++) {
-                    if(id === ids[i]) { match = true }
-                }
+        let ids = [0, 0, 0, 0, 0].reduce((acc, id, index) => {
+          while (id === 0 || match === true) {
+            id = Math.ceil(Math.random() * numberOfEstablishments);
+            match = false;
+            for (let i = 0; i < index; i++) {
+                if (id === acc[i]) { match = true }
             }
-            return id
-        })
-        console.log(ids)
+          }
+          acc.push(id);
+          return acc;
+        }, []);
         return database(`establishments`)
           .where(`id`, ids[0])
           .orWhere(`id`, ids[1])
