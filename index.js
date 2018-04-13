@@ -12,10 +12,16 @@ app.get(`/v1/hello`, (req, res) => {
   res.json({ message: `Hello World!` });
 });
 
-app.get(`/v1/establishments/:lat/:long`, (req, res) => {
-  queries.getEstablishments(req.params.lat, req.params.long)
-    .then()
-    .catch();
+app.get(`/v1/establishments/`, (req, res) => {
+  queries.getEstablishmentsQuickly()
+    .then(records => { res.json(records) })
+    .catch(err => { console.log(err); res.json({error: err}) });
+});
+
+app.get(`/v1/establishments/random`, (req, res) => {
+  queries.getEstablishments()
+    .then(records => { res.json(records) })
+    .catch(err => { console.log(err); res.json({error: err}) });
 });
 
 app.listen(port, () => {
