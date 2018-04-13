@@ -15,13 +15,13 @@ app.get(`/v1/hello`, (req, res) => {
 app.get(`/v1/establishments/`, (req, res) => {
   queries.getEstablishmentsQuickly()
     .then(records => { res.json(records) })
-    .catch(err => { console.log(err); res.json({error: err}) });
+    .catch(err => { res.json({error: err}) });
 });
 
 app.get(`/v1/establishments/random`, (req, res) => {
   queries.getEstablishments()
     .then(records => { res.json(records) })
-    .catch(err => { console.log(err); res.json({error: err}) });
+    .catch(err => { res.json({error: err}) });
 });
 
 app.listen(port, () => {
