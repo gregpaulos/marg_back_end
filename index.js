@@ -13,70 +13,24 @@ app.use(bodyParser.json());
 const google_key = process.env.GOOGLE;
 
 async function calcDistance(long, lat, establishmentArray) {
-  // function calcDistance(long, lat, establishmentObj) {
-  console.log("LONG", long);
-  console.log("LAT", lat);
-  console.log("GOOGLE MOFO", google_key);
-  // console.log("ESTABLISHMENT OBJECT", establishmentObj);
-
-  // console.log("ESTABLISHMENT ARRAY", establishmentArray);
-  // let url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${lat},${long}&destinations=${
-  //   establishmentArray[0][1]
-  // },${establishmentArray[0][0]}&key=${google_key}`;
-  // console.log("THIS IS OUR URL", url);
-  // fetch(url)
-  //   .then(response => response.json())
-  //   .then(data => {
-  //     console.log(
-  //       "THIS IS OUR RESPONSE FROM GOOGLE",
-  //       data.rows[0].elements[0].distance.text
-  //     );
-  //   });
-
-  console.log("ESTABLISHMENT ARRAY", establishmentArray);
-
-  
   async function hitGoogle () {
-    let responseArray = []
+    let fetchArray = []
     for (let i = 0; i < establishmentArray.length; i++) {
       let url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${lat},${long}&destinations=${
         establishmentArray[i][1]
       },${establishmentArray[i][0]}&key=${google_key}`;
-      console.log("THIS IS OUR URL", url);
       await fetch(url)
         .then(response => response.json())
         .then(data => {
-          console.log(
-            "THIS IS OUR RESPONSE FROM GOOGLE",
-            data.rows[0].elements[0].distance.text
-          );
-          responseArray.push(data.rows[0].elements[0].distance.text)
+          fetchArray.push(data.rows[0].elements[0].distance.text)
         })
     }
-    console.log('THIS IS OUR INITIAL RESPONSE', responseArray);
-    
-    return responseArray
-  
+    return fetchArray  
   }
 
-  const newResponseArray = await hitGoogle();
-  console.log('THIS IS OUR ARRAY OF GOOGLE INFO', newResponseArray);
-  
-  // let url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${lat},${long}&destinations=${
-  //   establishmentArray[0][1]
-  // },${establishmentArray[0][0]}&key=${google_key}`;
-  // console.log("THIS IS OUR URL", url);
-  // fetch(url)
-  //   .then(response => response.json())
-  //   .then(data => {
-  //     console.log(
-  //       "THIS IS OUR RESPONSE FROM GOOGLE",
-  //       data.rows[0].elements[0].distance.text
-  //     );
-  //   });
-
-  // let url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${lat},${long}&destinations=lat,long|lat,long|lat,long|lat,long|lat,long&key=${google_key}`
-  // fetch()
+  const responseArray = await hitGoogle();
+  console.log('THIS IS OUR ARRAY OF GOOGLE INFO', responseArray);
+  return responseArray
 }
 
 app.get(`/v1/hello`, (req, res) => {
@@ -100,24 +54,26 @@ app.get(`/v1/establishments/random/:long/:lat`, (req, res) => {
   queries
     .getEstablishments()
     .then(records => {
-      console.log("WHAT WE GET FROM OUR DB", records);
-      // let distanceObj = {};
-      // records.forEach(establishment => {
-      //   distanceObj[establishment.id] = [establishment.long, establishment.lat];
-      // });
-      // console.log("THIS IS THE OBJECT I CREATED", distanceObj);
-      // calcDistance(req.params.long, req.params.lat, distanceObj);
-
+      console.log('THIS IS FROM OUR DB, WE WANT TO PUT GOOGLE INFO ON IT', records);
+      
       let distanceArray = [];
       records.forEach(establishment => {
         distanceArray.push([establishment.long, establishment.lat]);
       });
-      console.log("THIS IS THE OBJECT I CREATED", distanceArray);
-      calcDistance(req.params.long, req.params.lat, distanceArray);
-
+      calcDistance(req.params.long, req.params.lat, distanceArray)
+      .then(googleInfo => {
+        console.log('THIS IS WHAT WE GOT BACK', googleInfo);
+        googleInfo.forEach((distance, i) => {
+          console.log('INSIDE OF OUR FOR EACH', i, records[i], googleInfo[i]);
+          
+          records[i]["distance"] = googleInfo[i]
+        })
+      })
       return records;
     })
     .then(records => {
+      console.log('DOES THIS FIRE BEFORE');
+      
       res.json(records);
     })
     .catch(err => {
