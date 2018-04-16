@@ -9,6 +9,7 @@ exports.up = function(knex, Promise) {
         table.string(`phone`)
         table.string(`website`)
         table.text(`description`)
+        table.integer(`distance`)
     })
 };
 
