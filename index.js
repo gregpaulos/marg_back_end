@@ -22,8 +22,12 @@ async function calcDistance(long, lat, establishmentArray) {
       await fetch(url)
         .then(response => response.json())
         .then(data => {
-          fetchArray.push(data.rows[0].elements[0].distance.text)
+          data.rows[0].elements[0].distance.text ? fetchArray.push(data.rows[0].elements[0].distance.text) : fetchArray.push(null)
         })
+        .catch(err => {
+          console.log(err);
+          fetchArray.push("We're not sure how far away this is")
+        });
     }
     return fetchArray  
   }
@@ -58,6 +62,8 @@ app.get(`/v1/establishments/random/:long/:lat`, (req, res) => {
       });
       calcDistance(req.params.long, req.params.lat, distanceArray)
       .then(googleInfo => {
+        console.log('THIS IS WHAT WE GET FROM GOOGLE', googleInfo);
+        
         googleInfo.forEach((distance, i) => {          
           records[i]["distance"] = googleInfo[i]
         })
