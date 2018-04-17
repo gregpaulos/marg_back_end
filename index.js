@@ -86,6 +86,30 @@ app.get(`/v1/establishments/:id`, (req, res) => {
     });
 });
 
+app.post(`/v1/ratings/:id`, (req, res) => {
+  console.log('the rating', req.body.rating)
+  queries
+    .addRating(req.params.id, req.body.rating)
+    .then(records => {
+      res.json(records);
+    })
+    .catch(err => {
+      res.json({ error: err });
+    });
+});
+
+app.get(`/v1/ratings/:id`, (req, res) => {
+  queries
+    .getRatingsByID(req.params.id)
+    .then(records => {
+      res.json(records);
+    })
+    .catch(err => {
+      res.json({ error: err });
+    });
+});
+
+
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);
 });
