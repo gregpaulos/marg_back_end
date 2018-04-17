@@ -56,6 +56,23 @@ app.get(`/v1/establishments/random/:long/:lat`, (req, res) => {
   queries
     .getEstablishments()
     .then(records => { 
+      records.forEach((establishment, i) => {
+        console.log('THIS IS THE ESTABLISHMENT', establishment);
+        
+        queries.getRatings(establishment.id)
+        .then(ratings => {
+          console.log('THIS IS THE RATINGS WE GET BACK', ratings);
+          const sum = ratings.reduce((accumulator, rating)=>{
+            return accumulator += rating.rating
+          }, 0)
+          console.log('THIS IS THE SUM', sum)
+          let avgRating = sum / ratings.length
+          console.log('THIS IS THE AVG', avgRating);
+          if (!avgRating) {avgRating = "No Ratings Yet!"}
+          records[i]["avgRating"] = avgRating 
+        })
+      });
+
       let distanceArray = [];
       records.forEach(establishment => {
         distanceArray.push([establishment.long, establishment.lat]);

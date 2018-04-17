@@ -47,5 +47,9 @@ module.exports = {
     addRating(id, rating) {
         let ratingRow = {"establishment_id": id, "rating": rating}
         return database("ratings").insert(ratingRow)
+    },
+
+    getRatings(id) {
+        return database(`ratings`).where(`establishment_id`, id)
     }
 };
